@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,19 +8,59 @@
     <title>Document</title>
     <script>
         window.addEventListener("error", (event) => {
-            const params = {
-                url: window.location.href,
-                message: event.message
-            };
-            const options = {
-                method: 'POST',
-                body: JSON.stringify( params )  
-            };
-            fetch( 'http://localhost/api.php', options )
-                .then( response => response.json() )
-                .then( response => {
-                    
-                } );
+            const { message } = event
+            if( 
+                message
+            ){
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                myHeaders.append("Access-Control-Allow-Origin", "*");
+                myHeaders.append("Access-Control-Allow-Origin", "*");
+    
+                var raw = JSON.stringify({
+                    "@type": "MessageCard",
+                    "@context": "http://schema.org/extensions",
+                    "themeColor": "ff0000",
+                    "summary": "Erro (teste)",
+                    "sections": [
+                        {
+                            "activityTitle": "Erro",
+                            "facts": [
+                                {
+                                    "name": "Local:",
+                                    "value": window.location.href
+                                },
+                                {
+                                    "name": "Mensagem:",
+                                    "value": event.message
+                                },
+                                {
+                                    "name": "Usuário:",
+                                    "value": JSON.stringify(sessionStorage.getItem('usuario'))
+                                },
+                                {
+                                    "name": "Data:",
+                                    "value": new Date()
+                                }
+                            ],
+                            "markdown": true
+                        }
+                    ]
+                });
+    
+                var requestOptions = {
+                    method: 'POST',
+                    headers: myHeaders,
+                    body: raw,
+                    mode: 'no-cors',
+                    redirect: 'follow'
+                };
+    
+                fetch("https://cgcontadoresti.webhook.office.com/webhookb2/8bd9de66-354e-4622-9767-bf357c6cf111@2e3906f9-085e-4770-b9d3-4d81b33b8927/IncomingWebhook/8188f4ffc9c44cbd9bdd4bb44572af30/30b97f96-f2a8-46f5-a6ce-916441bc8689", requestOptions)
+                    .then(response => response.text())
+                    .then(result => console.log(result))
+                    .catch(error => console.log('error', error));
+            }
         });
 
         setTimeout(() => {
@@ -27,7 +68,9 @@
         }, 1000);
     </script>
 </head>
+
 <body>
-    
+
 </body>
+
 </html>
